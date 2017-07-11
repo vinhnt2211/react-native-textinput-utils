@@ -11,6 +11,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import "RCTTextField.h"
+#import "RCTUITextField.h"
 #import "RCTTextView.h"
 #import <React/RCTUIManager.h>
 #import <React/RCTEventDispatcher.h>
@@ -52,7 +53,7 @@ RCT_EXPORT_METHOD(configure:(nonnull NSNumber *)reactNode
         }
         else {
             RCTTextField *reactNativeTextView = ((RCTTextField *)view);
-            textView = reactNativeTextView;
+            textView = reactNativeTextView.textField;
         }
         
         if (options[@"tintColor"]) {
@@ -139,8 +140,8 @@ RCT_EXPORT_METHOD(moveCursorToLast:(nonnull NSNumber *)reactNode) {
         RCTTextField *textView = ((RCTTextField *)view);
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            UITextPosition *position = [textView endOfDocument];
-            textView.selectedTextRange = [textView textRangeFromPosition:position toPosition:position];
+            UITextPosition *position = [textView.textField endOfDocument];
+            textView.textField.selectedTextRange = [textView.textField textRangeFromPosition:position toPosition:position];
         });
     }];
 }
@@ -162,9 +163,9 @@ RCT_EXPORT_METHOD(setSelectedTextRange:(nonnull NSNumber *)reactNode
         NSRange range  = NSMakeRange([startPosition integerValue], [endPosition integerValue]);
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            UITextPosition *from = [textView positionFromPosition:[textView beginningOfDocument] offset:range.location];
-            UITextPosition *to = [textView positionFromPosition:from offset:range.length];
-            [textView setSelectedTextRange:[textView textRangeFromPosition:from toPosition:to]];
+            UITextPosition *from = [textView.textField positionFromPosition:[textView.textField beginningOfDocument] offset:range.location];
+            UITextPosition *to = [textView.textField positionFromPosition:from offset:range.length];
+            [textView.textField setSelectedTextRange:[textView.textField textRangeFromPosition:from toPosition:to]];
         });
     }];
 }

@@ -12,11 +12,11 @@
 
 - (void)setSelectedRange:(NSRange)range
 {
-    UITextPosition* beginning = self.beginningOfDocument;
-    UITextPosition* startPosition = [self positionFromPosition:beginning offset:range.location];
-    UITextPosition* endPosition = [self positionFromPosition:beginning offset:range.location + range.length];
-    UITextRange* selectionRange = [self textRangeFromPosition:startPosition toPosition:endPosition];
-    [self setSelectedTextRange:selectionRange];
+    UITextPosition* beginning = self.textField.beginningOfDocument;
+    UITextPosition* startPosition = [self.textField positionFromPosition:beginning offset:range.location];
+    UITextPosition* endPosition = [self.textField positionFromPosition:beginning offset:range.location + range.length];
+    UITextRange* selectionRange = [self.textField textRangeFromPosition:startPosition toPosition:endPosition];
+    [self.textField setSelectedTextRange:selectionRange];
 }
 
 @end

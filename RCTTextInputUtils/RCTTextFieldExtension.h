@@ -7,6 +7,7 @@
 //
 
 #import "RCTTextField.h"
+#import "RCTUITextField.h"
 
 @interface RCTTextField (RCTTextFieldExtension)
 

@@ -53,14 +53,14 @@ RCT_EXPORT_METHOD(configure:(nonnull NSNumber *)reactNode
         }
         else {
             RCTTextField *reactNativeTextView = ((RCTTextField *)view);
-            textView = reactNativeTextView.textField;
+            textView = reactNativeTextView.backedTextInputView;
         }
         
         if (options[@"tintColor"]) {
             NSLog(@"tintColor is %@", options[@"tintColor"]);
             textView.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
         }
-
+        
         UIToolbar* numberToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
         
         NSInteger toolbarStyle = [RCTConvert NSInteger:options[@"barStyle"]];
@@ -140,8 +140,10 @@ RCT_EXPORT_METHOD(moveCursorToLast:(nonnull NSNumber *)reactNode) {
         RCTTextField *textView = ((RCTTextField *)view);
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            UITextPosition *position = [textView.textField endOfDocument];
-            textView.textField.selectedTextRange = [textView.textField textRangeFromPosition:position toPosition:position];
+            UITextPosition *position = [textView.backedTextInputView endOfDocument];
+            //            textView.backedTextInputView.selectedTextRange = [textView.backedTextInputView textRangeFromPosition:position toPosition:position];
+            [textView.backedTextInputView setSelectedTextRange:[textView.backedTextInputView textRangeFromPosition:position toPosition:position] notifyDelegate:true];
+            
         });
     }];
 }
@@ -163,9 +165,10 @@ RCT_EXPORT_METHOD(setSelectedTextRange:(nonnull NSNumber *)reactNode
         NSRange range  = NSMakeRange([startPosition integerValue], [endPosition integerValue]);
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            UITextPosition *from = [textView.textField positionFromPosition:[textView.textField beginningOfDocument] offset:range.location];
-            UITextPosition *to = [textView.textField positionFromPosition:from offset:range.length];
-            [textView.textField setSelectedTextRange:[textView.textField textRangeFromPosition:from toPosition:to]];
+            UITextPosition *from = [textView.backedTextInputView positionFromPosition:[textView.backedTextInputView beginningOfDocument] offset:range.location];
+            UITextPosition *to = [textView.backedTextInputView positionFromPosition:from offset:range.length];
+            //            [textView.backedTextInputView setSelectedTextRange: notifyDelegate:<#(BOOL)#>]
+            [textView.backedTextInputView setSelectedTextRange:[textView.backedTextInputView textRangeFromPosition:from toPosition:to] notifyDelegate:false];
         });
     }];
 }
@@ -231,7 +234,7 @@ RCT_EXPORT_METHOD(reloadPickerData:(nonnull NSNumber *)reactNode
 {
     NSNumber *currentUid = [NSNumber numberWithLong:sender.tag];
     [self.bridge.eventDispatcher sendAppEventWithName:@"TUKeyboardDatePickerViewDidSelected"
-                                                    body:@{@"currentUid" : [currentUid stringValue], @"selectedDate": @(sender.date.timeIntervalSince1970 * 1000.0)}];
+                                                 body:@{@"currentUid" : [currentUid stringValue], @"selectedDate": @(sender.date.timeIntervalSince1970 * 1000.0)}];
 }
 
 - (void)valueSelected:(RCTKeyboardPicker*)sender
@@ -240,21 +243,21 @@ RCT_EXPORT_METHOD(reloadPickerData:(nonnull NSNumber *)reactNode
     NSLog(@"Selected %d", [selectedIndex intValue]);
     NSNumber *currentUid = [NSNumber numberWithLong:sender.tag];
     [self.bridge.eventDispatcher sendAppEventWithName:@"TUKeyboardPickerViewDidSelected"
-                                                    body:@{@"currentUid" : [currentUid stringValue], @"selectedIndex": [selectedIndex stringValue]}];
+                                                 body:@{@"currentUid" : [currentUid stringValue], @"selectedIndex": [selectedIndex stringValue]}];
 }
 
 - (void)keyboardCancel:(UIBarButtonItem*)sender
 {
     NSNumber *currentUid = [NSNumber numberWithLong:sender.tag];
     [self.bridge.eventDispatcher sendAppEventWithName:@"TUKeyboardToolbarDidTouchOnCancel"
-                                                    body:@([currentUid intValue])];
+                                                 body:@([currentUid intValue])];
 }
 
 - (void)keyboardDone:(UIBarButtonItem*)sender
 {
     NSNumber *currentUid = [NSNumber numberWithLong:sender.tag];
     [self.bridge.eventDispatcher sendAppEventWithName:@"TUKeyboardToolbarDidTouchOnDone"
-                                                    body:@([currentUid intValue])];
+                                                 body:@([currentUid intValue])];
 }
 
 @end
